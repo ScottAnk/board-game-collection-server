@@ -1,0 +1,33 @@
+const express = require('express')
+const BoardGame = require('../models/boardgame')
+
+const router = express.Router()
+
+//INDEX
+router.get('/', (req, res, next) => {
+  BoardGame.find()
+    .then((boardGames) => {
+      res.status(200).json({boardGames: boardGames})
+    })
+    .catch(next)
+})
+
+//CREATE
+router.post('/', (req, res, next) => {
+  BoardGame.create(req.body.boardGame)
+    .then((boardGame) => {
+      res.status(201).json({boardGame: boardGame})
+    })
+    .catch(next)
+})
+
+//SHOW
+router.get('/:id', (req, res, next) => {
+  BoardGame.findById(req.params.id)
+    .then((boardGame) => {
+      res.status(200).json({boardGame: boardGame})
+    })
+    .catch(next)
+})
+
+module.exports = router

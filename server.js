@@ -5,9 +5,14 @@ const express = require('express')
 const PORT = 8000
 
 const app = express()
-app.use(express.json)
+app.use(express.json())
 //just putting this in here for later
 //app.use(cors)
+mongoose.set('strictQuery', true)
+mongoose.connect(db, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
 
 const indexRoutes = require('./routes/indexRoutes')
 app.use(indexRoutes)
