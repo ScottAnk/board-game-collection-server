@@ -30,4 +30,24 @@ router.get('/:id', (req, res, next) => {
     .catch(next)
 })
 
+//UPDATE
+router.post('/:id', (req, res, next) => {
+  // TODO BUG something's happening here randomly where mongoose throws a validation error but the boardGame document still gets updated
+  BoardGame.findById(req.params.id)
+    .then(boardGame => {
+      boardGame.updateOne(req.body.boardGame)
+      .then(() => boardGame.save())
+    })
+    .then(() => res.sendStatus(204))
+    .catch(next)
+})
+
+//DELETE
+router.delete('/:id', (req, res, next) => {
+  BoardGame.findById(req.params.id)
+    .then((boardGame) => boardGame.deleteOne())
+    .then((boardGame) => res.status(200).json({boardGame: boardGame}))
+    .catch(next)
+})
+
 module.exports = router
