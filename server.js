@@ -1,13 +1,14 @@
 const db = require('./config/db')
 const mongoose = require('mongoose')
 const express = require('express')
+const cors = require('cors')
 
 const PORT = 8000
 
 const app = express()
 app.use(express.json())
-//just putting this in here for later
-//app.use(cors)
+app.use(cors('http://127.0.0.1:55'))
+
 mongoose.set('strictQuery', true)
 mongoose.connect(db, {
   useNewUrlParser: true,
