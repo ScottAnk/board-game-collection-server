@@ -31,7 +31,7 @@ router.get('/:id', (req, res, next) => {
 })
 
 //UPDATE
-router.post('/:id', (req, res, next) => {
+router.patch('/:id', (req, res, next) => {
   // TODO BUG something's happening here randomly where mongoose throws a validation error but the boardGame document still gets updated
   BoardGame.findById(req.params.id)
     .then(boardGame => {
