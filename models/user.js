@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const boardGameSchema = require('./boardgame')
 
 const userSchema = mongoose.Schema({
   name: {
@@ -9,9 +10,9 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  games: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "BoardGame"
+  boardGames: [{
+    type: boardGameSchema,
+    default: []
   }]
 })
 

@@ -23,6 +23,4 @@ const boardGameSchema = new mongoose.Schema({
   }
 })
 
-const BoardGame = mongoose.model('BoardGame', boardGameSchema)
-
-module.exports = BoardGame
+module.exports = boardGameSchema

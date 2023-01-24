@@ -1,53 +1,63 @@
 const express = require('express')
-const BoardGame = require('../models/boardgame')
+const User = require('../models/user')
 const { requireToken } = require('../config/auth')
 
 const router = express.Router()
 
 //INDEX
 router.get('/', requireToken, (req, res, next) => {
-  BoardGame.find()
-    .then((boardGames) => {
-      res.status(200).json({boardGames: boardGames})
-    })
-    .catch(next)
+  try {
+    res.status(200).json({ boardGames: req.user.boardGames })
+  } catch {
+    next()
+  }
 })
 
 //CREATE
 router.post('/', requireToken, (req, res, next) => {
-  BoardGame.create(req.body.boardGame)
-    .then((boardGame) => {
-      res.status(201).json({boardGame: boardGame})
+  req.user.boardGames.push(req.body.boardGame)
+  req.user
+    .save()
+    .then((user) => {
+      const boardGame = user.boardGames[user.boardGames.length - 1]
+      res.status(201).json({ boardGame: boardGame })
     })
     .catch(next)
 })
 
 //SHOW
 router.get('/:id', requireToken, (req, res, next) => {
-  BoardGame.findById(req.params.id)
-    .then((boardGame) => {
-      res.status(200).json({boardGame: boardGame})
-    })
-    .catch(next)
+  try {
+    const boardGame = req.user.boardGames.id(req.params.id)
+    res.status(200).json({ boardGame: boardGame })
+  } catch {
+    next
+  }
 })
 
 //UPDATE
 router.patch('/:id', requireToken, (req, res, next) => {
-  // TODO BUG something's happening here randomly where mongoose throws a validation error but the boardGame document still gets updated
-  BoardGame.findById(req.params.id)
-    .then(boardGame => {
-      return boardGame.updateOne(req.body.boardGame)
-      .then(() => boardGame.save())
+  new Promise((resolve, reject) => {
+    resolve(req.user.boardGames.id(req.params.id))
+  })
+    .then((boardGame) => {
+      boardGame.set(req.body.boardGame)
+      return boardGame.parent().save()
     })
-    .then((boardGame) => res.status(200).json({boardGame: boardGame}))
+    .then((boardGame) => res.status(200).json({ boardGame: boardGame }))
     .catch(next)
 })
 
 //DELETE
 router.delete('/:id', requireToken, (req, res, next) => {
-  BoardGame.findById(req.params.id)
-    .then((boardGame) => boardGame.deleteOne())
-    .then((boardGame) => res.status(200).json({boardGame: boardGame}))
+  new Promise((resolve, reject) => resolve(req.user))
+    .then((user) => user.boardGames.id(req.params.id))
+    .then((boardGame) => {
+      boardGame.remove()
+      boardGame.parent().save()
+      return boardGame
+    })
+    .then((boardGame) => res.status(200).json({ boardGame: boardGame }))
     .catch(next)
 })
 
